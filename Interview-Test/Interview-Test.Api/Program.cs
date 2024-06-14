@@ -1,5 +1,13 @@
+using Interview_Test.Validations;
+using FluentValidation;
 using Interview_Test.Infrastructure;
+using Interview_Test.Mediator.Handler;
+using Interview_Test.Mediator.Queries;
 using Interview_Test.Middlewares;
+using Interview_Test.Repositories;
+using Interview_Test.Repositories.Interfaces;
+using Interview_Test.Validations;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +17,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
+builder.Services.AddTransient<IUserRepository, UserRepository>(); //Register service lifetime
 builder.Services.AddMvc(options => options.EnableEndpointRouting = false);
-var connection = "<your database connection string>";
+builder.Services.AddMediatR(x => x.RegisterServicesFromAssemblies(typeof(Program).Assembly));  //MediatR
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly); //Fluent Validator
+var connection = "Server=.;Database=entitytest;Trusted_Connection=True;TrustServerCertificate=true;";
 builder.Services.AddDbContext<InterviewTestDbContext>(options =>
     {
         options.UseSqlServer(connection,
@@ -31,7 +43,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseMiddleware<AuthenMiddleware>();
+app.UseFluentValidationHandlerExtension();
 app.UseMvc();
 app.Run();

@@ -10,6 +10,7 @@ public class InterviewTestDbContext : DbContext
     {
     }
     
+    //Each of these is a table
     public DbSet<UserModel> UserTb { get; set; }
     public DbSet<UserProfileModel> UserProfileTb { get; set; }
     public DbSet<RoleModel> RoleTb { get; set; }
@@ -21,7 +22,7 @@ public class InterviewTestDbContextDesignFactory : IDesignTimeDbContextFactory<I
 {
     public InterviewTestDbContext CreateDbContext(string[] args)
     {
-        string connectionString = "<your database connection string>";
+        string connectionString = "Server=.;Database=entitytest;Trusted_Connection=True;TrustServerCertificate=true;";
         var optionsBuilder = new DbContextOptionsBuilder<InterviewTestDbContext>()
             .UseSqlServer(connectionString, opts => opts.CommandTimeout(600));
 

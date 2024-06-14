@@ -6,4 +6,5 @@ public interface IUserRepository
 {
     dynamic GetUserById(string id);
     int CreateUser(UserModel user);
+    bool CheckUserIfExistsByUserId(string id);
 }
